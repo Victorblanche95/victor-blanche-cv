@@ -161,10 +161,12 @@
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 25px;
+            align-items: start;
         }
 
         @media (max-width: 850px) {
             .container { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
         }
 
         /* --- STYLES DES ARTICLES --- */
@@ -416,7 +418,7 @@
         .badge-medal.silver { background-color: #c0c0c0; }
 
         /* --- COLONNE LATÉRALE (SIDEBAR) --- */
-        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .sidebar { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 140px; }
         .widget { background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .widget-title { font-size: 1.1rem; text-transform: uppercase; color: #fff; background-color: #111; padding: 6px 10px; margin-bottom: 15px; border-radius: 2px; }
         
