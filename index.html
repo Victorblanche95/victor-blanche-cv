@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LE TRANSFERT - Spécial Mercato : Victor Blanche</title>
+    <!-- Chargement de la bibliothèque Chart.js pour le graphique en anneau -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Réinitialisation de base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Black', 'Impact', sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            color: #111111;
+            padding-bottom: 50px;
+            transition: background-color 0.3s;
+        }
+
+        /* --- FIL INFO DÉFILANT --- */
+        .ticker-wrapper {
+            background-color: #d8232a;
+            color: white;
+            overflow: hidden;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .ticker {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 25s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translate3d(100%, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* --- EN-TÊTE ET MENU STYLE RUBRIQUE --- */
+        header {
+            background-color: #ffffff;
+            padding: 15px 0 0 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo-lequipe {
+            background-color: #d8232a;
+            color: #ffffff;
+            display: inline-block;
+            font-size: 3rem;
+            font-weight: 900;
+            font-style: italic;
+            padding: 0 20px;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        /* Badge Live clignotant */
+        .badge-live {
+            position: absolute;
+            top: -5px;
+            right: -85px;
+            background-color: #2e7d32;
+            color: white;
+            font-size: 0.7rem;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .badge-live::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #69f0ae;
+            border-radius: 50%;
+            animation: pulse-green 1.5s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(105, 240, 174, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(105, 240, 174, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(105, 240, 174, 0); }
+        }
+
+        nav {
+            background-color: #111111;
+            display: flex;
+            justify-content: center;
+            border-bottom: 4px solid #d8232a;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: #ffffff;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 4px solid transparent;
+        }
+
+        nav button:hover {
+            background-color: rgba(255,255,255,0.05);
+            border-bottom-color: #d8232a;
+        }
+
+        nav button.active {
+            background-color: #d8232a;
+            color: white;
+            border-bottom-color: #ffffff;
+        }
+
+        /* --- SYSTEME D'ONGLETS AVEC TRANSITIONS DOUCES --- */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .tab-content.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- STRUCTURE DE LA PAGE --- */
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 850px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        /* --- STYLES DES ARTICLES --- */
+        .main-story {
+            background-color: #ffffff;
+            padding: 30px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-radius: 4px;
+        }
+
+        .tag-category {
+            background-color: #d8232a;
+            color: #fff;
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            border-radius: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- STYLE ARTISTIQUE DU TITRE DE LA UNE --- */
+        h1.main-title {
+            line-height: 1.1;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .title-highlight {
+            font-size: 3.2rem;
+            font-weight: 900;
+            color: #111;
+            display: block;
+            letter-spacing: -2px;
+            line-height: 0.95;
+        }
+
+        .title-rest {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #d8232a;
+            display: block;
+            margin-top: 12px;
+            letter-spacing: 1px;
+            border-top: 3px solid #111;
+            padding-top: 10px;
+            line-height: 1.3;
+        }
+
+        @media (max-width: 600px) {
+            .title-highlight { font-size: 2.2rem; letter-spacing: -1px; }
+            .title-rest { font-size: 1rem; }
+        }
+
+        .intertitre {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            color: #d8232a;
+            margin: 25px 0 10px 0;
+            border-bottom: 2px solid #111;
+            padding-bottom: 3px;
+        }
+
+        .article-body {
+            font-family: Georgia, serif;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #222;
+        }
+
+        .article-body p { margin-bottom: 15px; }
+
+        .sub-section-focus {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-left: 3px solid #111;
+            margin: 15px 0;
+            font-family: Georgia, serif;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* --- BLOC "NOTE DU MATCH" --- */
+        .rating-box {
+            background: #fdf2f2;
+            border: 2px solid #d8232a;
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-radius: 4px;
+        }
+        .rating-number {
+            background: #d8232a;
+            color: white;
+            font-size: 2rem;
+            padding: 10px 15px;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+
+        /* --- EFFET GRAPHIQUE SUR LES IMAGES --- */
+        .photo-box {
+            width: 100%;
+            height: 380px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .photo-box:hover img {
+            transform: scale(1.04);
+        }
+
+        .photo-legend {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 70%, rgba(0,0,0,0));
+            color: #fff;
+            padding: 12px 15px;
+            font-family: Arial, sans-serif;
+            font-size: 0.8rem;
+            font-style: italic;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+        }
+
+        /* --- GRAPH ET STATS --- */
+        .skill-section-title {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            color: #111;
+            margin: 25px 0 15px 0;
+            border-bottom: 3px solid #111;
+            padding-bottom: 5px;
+        }
+
+        .chart-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 30px;
+            align-items: center;
+            margin: 25px 0;
+        }
+        @media (max-width: 650px) {
+            .chart-layout { grid-template-columns: 1fr; }
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .chart-legend-list {
+            list-style: none;
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
+        }
+        .chart-legend-item {
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .legend-color-box {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+
+        .soft-skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+            font-family: Arial, sans-serif;
+        }
+        @media (max-width: 600px) {
+            .soft-skills-grid { grid-template-columns: 1fr; }
+        }
+        .soft-skill-card {
+            background-color: #f9f9f9;
+            padding: 12px;
+            border-left: 3px solid #0288d1;
+            border-radius: 0 4px 4px 0;
+            transition: transform 0.2s;
+        }
+        .soft-skill-card:hover {
+            transform: translateX(4px);
+        }
+        .soft-skill-title {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #111;
+            margin-bottom: 4px;
+        }
+        .soft-skill-desc {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.3;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
+        }
+        .stats-table th {
+            background-color: #111;
+            color: #fff;
+            text-align: left;
+            padding: 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        .stats-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            color: #333;
+        }
+        .stats-table tr:nth-child(even) { background-color: #f9f9f9; }
+        .badge-medal {
+            background-color: #ffd700;
+            color: #111;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        .badge-medal.silver { background-color: #c0c0c0; }
+
+        /* --- COLONNE LATÉRALE (SIDEBAR) --- */
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .widget { background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .widget-title { font-size: 1.1rem; text-transform: uppercase; color: #fff; background-color: #111; padding: 6px 10px; margin-bottom: 15px; border-radius: 2px; }
+        
+        .btn-contact { 
+            display: block; 
+            background: #d8232a; 
+            color: white; 
+            text-align: center; 
+            padding: 12px; 
+            text-decoration: none; 
+            font-size: 1.1rem; 
+            text-transform: uppercase; 
+            font-weight: bold; 
+            border-bottom: 4px solid #a61318; 
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .btn-contact:hover {
+            background: #b2181c;
+            transform: translateY(-2px);
+        }
+        
+        /* Contacts interactifs copiables */
+        .sidebar-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-family: Arial, sans-serif;
+            font-size: 0.85rem;
+            color: #444;
+        }
+        .sidebar-row span:first-child { font-weight: bold; color: #111; }
+        .sidebar-link { color: #0288d1; text-decoration: none; font-weight: bold; }
+        .sidebar-link:hover { text-decoration: underline; }
+        
+        .interactive-contact {
+            cursor: pointer;
+            position: relative;
+            padding: 2px 6px;
+            border-radius: 3px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .interactive-contact:hover {
+            background-color: #eee;
+            color: #d8232a;
+        }
+        .interactive-contact::after {
+            content: " 📋";
+            font-size: 0.75rem;
+            opacity: 0.4;
+        }
+        .interactive-contact:hover::after {
+            opacity: 1;
+        }
+        
+        .edito-text {
+            font-family: Georgia, serif;
+            font-style: italic;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #444;
+        }
+
+        /* Toast notification */
+        #toast-notification {
+            position: fixed;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #323232;
+            color: white;
+            padding: 12px 24px;
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 30px;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #toast-notification.show {
+            bottom: 30px;
+        }
+
+        /* --- OPTIMISATION DU FORMAT IMPRESSION PDF --- */
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                padding-bottom: 0 !important;
+            }
+            header, nav, .ticker-wrapper, .sidebar, .badge-live, #toast-notification {
+                display: none !important;
+            }
+            .container {
+                display: block !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .tab-content {
+                display: block !important;
+                opacity: 1 !important;
+                transform: none !important;
+                page-break-after: always;
+            }
+            .photo-box {
+                height: 300px !important;
+                page-break-inside: avoid !important;
+            }
+            .main-story {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            .sub-section-focus {
+                background-color: #f5f5f5 !important;
+                border-left-color: #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fil Info Défilant -->
+    <div class="ticker-wrapper">
+        <div class="ticker">
+            ⚡ Comme l'a rappelé Federer lors de son discours à Dartmouth : "on peut gagner 80% de ses matchs en ne remportant que 54% des points." Dans le monde pro, l'essentiel est de savoir rebondir et de réussir au moment le plus important. • ⚡
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-lequipe">LE TRANSFERT</div>
+            <div class="badge-live">LIVE : ACTIF</div>
+        </div>
+        <nav>
+            <button class="nav-btn active" onclick="openTab('la-une')">À la Une</button>
+            <button class="nav-btn" onclick="openTab('saisons')">Saisons</button>
+            <button class="nav-btn" onclick="openTab('centre-formation')">Centre de Formation</button>
+            <button class="nav-btn" onclick="openTab('competences')">Statistiques</button>
+            <button class="nav-btn" onclick="openTab('vie-perso')">Hors-Terrain</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        
+        <!-- ZONE DE CONTENU PRINCIPALE -->
+        <main>
+            
+            <!-- ONGLET 1 : LA UNE -->
+            <div id="la-une" class="tab-content active" style="display: block; opacity: 1; transform: translateY(0);">
+                <article class="main-story">
+                    <div class="tag-category">À la Une</div>
+                    <h1 class="main-title">
+                        <span class="title-highlight">VICTOR BLANCHE</span>
+                        <span class="title-rest">La valeur sûre du management sportif prête pour le haut niveau</span>
+                    </h1>
+                    
+                    <!-- Bannière Photo Plein Écran -->
+                    <div class="photo-box" style="height: 550px;">
+                        <img src="images/watermarked_img_9537871781102113045.png" alt="Conférence de presse Victor Blanche" style="object-fit: cover; object-position: center 25%;">
+                        <div class="photo-legend">Mercato d'IDF : Victor Blanche, diplômé d'un double Master d'élite en management du sport, se tient prêt pour le démarrage de la saison 2026.</div>
+                    </div>
+
+                    <div class="article-body">
+                        <p><strong>TRANSFERT.</strong> Diplômé d'un double Master d'élite (CY-ILEPS / Coventry University), Victor Blanche s'impose comme la recrue idéale pour dynamiser vos projets en développement commercial, communication ou événementiel dès septembre 2026. </p>
+                        <p><strong>Totalement investi et prêt à tout, de manière générale, pour faire avancer les projets dans l'univers du sport</strong>, il met son endurance terrain et son bilinguisme au service des structures les plus ambitieuses. Découvrez sa feuille de match complète en naviguant à travers les différents onglets de sa revue d'effectif.</p>
+                    </div>
+                </article>
+            </div>
+
+            <!-- ONGLET 2 : SAISONS -->
+            <div id="saisons" class="tab-content">
+                <article class="main-story">
+                    <div class="tag-category">Saisons &amp; Stats Pro</div>
+                    <h1 class="main-title">FEUILLE DE MATCH : UNE PROGRESSION CONSTANTE SUR LE TERRAIN</h1>
+                    <div class="article-body">
+                        
+                        <!-- ARTUR'IN -->
+                        <div class="intertitre">Saisons 2024 - 2026 : Cadre Rétention &amp; Ops — Artur'In FC</div>
+                        <p>Évoluant dans un environnement start-up dynamique au sein de l'équipe Customer Success, Victor a passé deux saisons complètes au sein de cette structure à Aubervilliers, occupant deux postes complémentaires clés pour la gestion et la fidélisation du portefeuille client.</p>
+                        
+                        <div class="sub-section-focus">
+                            <strong>Pôle Rétention &amp; Portefeuille</strong>
+                            <p style="margin-top: 5px;">
+                                Lors de sa première année, Victor s'est concentré sur la préservation du chiffre d'affaires. Face aux demandes de résiliation, il a mené des négociations directes et complexes pour concevoir des solutions de sauvetage sur mesure et reconduire les contrats. En parallèle, il a géré les aspects financiers critiques, notamment le suivi des encours et le recouvrement des impayés via la plateforme Upflow, optimisant ainsi la trésorerie de l'entreprise.
+                            </p>
+                            
+                            <strong style="display:block; margin-top:10px;">Pôle Operations (Ops) &amp; Support</strong>
+                            <p style="margin-top: 5px;">
+                                Durant sa seconde saison, Victor a basculé sur un rôle purement orienté Operations et support de haut niveau. Il a pris en charge le déploiement technique et la configuration de la plateforme logicielle pour les nouveaux entrants. Au quotidien, il assurait la résolution des incidents et le conseil client en direct via Intercom, tout en menant des campagnes d'upsell pour maximiser la valeur de chaque compte. L'intégralité de son activité et des données de satisfaction était centralisée et analysée via le CRM Salesforce.
+                            </p>
+                        </div>
+                        <div class="photo-box">
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1000" alt="Operations et CRM">
+                            <div class="photo-legend">La maîtrise des interfaces et des données : Victor au cœur de l'infrastructure CRM Salesforce chez Artur'In.</div>
+                        </div>
+
+                        <!-- BLUEGREEN GOLF -->
+                        <div class="intertitre">Saison 2024 : Le pivot Événementiel &amp; Pro Shop — Golf Bluegreen de Villennes-sur-Seine</div>
+                        <p>Lors d'une intense saison de printemps, d'avril à juin, Victor s'est illustré sur les infrastructures de Villennes-sur-Seine. Cette expérience opérationnelle intense lui a permis d'exercer de lourdes responsabilités commerciales et logistiques.</p>
+                        
+                        <div class="sub-section-focus">
+                            <p>Son activité s'est articulée autour de la logistique d'événements de marques et de compétitions majeures. Victor a orchestré les sessions d'essais de clubs et de fitting sur mesure pour de grandes marques partenaires du golf. Sur le terrain, il assurait le rôle crucial de Starter en compétition officielle, gérant les flux de joueurs, le respect du rythme de jeu et l'application des règlements de la fédération.</p>
+                            <p style="margin-top: 10px;">En parallèle, il a pris la responsabilité de la gestion physique et téléphonique de l'accueil, de la planification des départs et des ventes d'équipements techniques spécialisés au sein du Pro Shop.</p>
+                        </div>
+                        <div class="photo-box">
+                            <img src="images/photo_Golf-De-Villennes_1600194028.jpg" alt="Golf de Villennes-sur-Seine">
+                            <div class="photo-legend">Les infrastructures du Golf Bluegreen de Villennes-sur-Seine : un terrain d'expression idéal pour l'événementiel, le fitting et la logistique de tournois.</div>
+                        </div>
+
+                        <!-- L'ÉQUIPE & JOURNAL DU GOLF -->
+                        <div class="intertitre">Saison 2022 : Journalisme &amp; Immersion Médias — Le FC L'Équipe &amp; Journal du Golf</div>
+                        <p>Plongé au cœur du plus grand média sportif de France à Boulogne-Billancourt, Victor a validé une expérience d'un mois intense, alliant autonomie rédactionnelle et logistique technique.</p>
+                        
+                        <div class="sub-section-focus">
+                            <p>Victor s'est vu confier la rédaction autonome d'un article d'actualité complet portant sur le circuit de golf professionnel de haut niveau WinTour, texte qui fut officiellement publié dans l'édition papier de référence du Journal du Golf.</p>
+                            <p style="margin-top: 10px;">Au niveau éditorial et audiovisuel, il a activement participé à la structuration et la modification quotidienne des grilles de diffusion de la chaîne de télévision, mené des interviews, géré des traductions de contenus internationaux et assisté les équipes techniques dans le réglage et la configuration des équipements de studio.</p>
+                        </div>
+                        <div class="photo-box" style="height: 480px;">
+                            <img src="images/Gemini_Generated_Image_y5begsy5begsy5be.png" alt="Article Win Tour Décolle rédigé par Victor Blanche" style="object-fit: contain; background-color: #ffffff;">
+                            <div class="photo-legend">Preuve de publication : article original « Le Win Tour décolle » rédigé par Victor Blanche dans le Journal du Golf (Photos DR).</div>
+                        </div>
+
+                        <!-- SÉQUENCE JEUNESSE / JOBS D'ÉTÉ -->
+                        <div class="intertitre">Saisons Jeunesse : Animation &amp; Expériences de Terrain</div>
+                        <p>En parallèle de son exigeant parcours académique, Victor a toujours tenu à confronter son profil à des expériences de terrain formatrices.</p>
+                        
+                        <div class="sub-section-focus">
+                            <p>Il s'est investi durant plusieurs saisons comme animateur en centre sportif et de loisirs au sein des municipalités d'Osny et de Saint-Ouen-l'Aumône, développant de solides compétences d'autorité, d'empathie et de prise en charge de groupes.</p>
+                            <p style="margin-top: 10px;">Victor a également validé plusieurs missions de logistique industrielle à forte intensité lors de contrats estivaux à la plateforme agroalimentaire d'intérêt national de Rungis, au sein des entrepôts de l'enseigne Leroy Merlin, ainsi que chez le créateur de jeux Djeco.</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- ONGLET 3 : CENTRE DE FORMATION -->
+            <div id="centre-formation" class="tab-content">
+                <article class="main-story">
+                    <div class="tag-category">Centre de Formation</div>
+                    <h1 class="main-title">PROGRAMME ACADÉMIQUE : LE DÉTAIL DES COMPÉTENCES MANAGER</h1>
+                    <div class="article-body">
+                        
+                        <!-- MASTER -->
+                        <div class="intertitre">Saisons 2024 - 2026 : Le Cap du Double Master de Management</div>
+                        <p>Victor parachève son cursus par l'obtention d'un diplôme d'élite : le Double Master en Sciences du management et des métiers du sport, délivré conjointement par CY-ILEPS en France et la prestigieuse Coventry University au Royaume-Uni.</p>
+                        
+                        <div class="sub-section-focus">
+                            <strong>Le Krérathon de Management : Innovation et Santé Mentale dans le Rugby</strong>
+                            <p style="margin-top: 5px;">
+                                L'un des jalons les plus marquants de ce cursus fut sa participation majeure au Krérathon de management de projet. Victor et son équipe ont conçu de toutes pièces une start-up innovante visant à accompagner les joueurs de rugby professionnels. Le projet, piloté de l'étude de marché initiale jusqu'au plan financier de viabilité, propose un produit unique d'accompagnement quotidien dédié à la préservation et au suivi de la santé mentale des athlètes. Ce projet d'envergure démontre son aptitude à structurer des modèles économiques viables face à des problématiques de société aiguës.
+                            </p>
+                            
+                            <strong style="display:block; margin-top:10px;">Compétences transversales acquises</strong>
+                            <p style="margin-top: 5px;">
+                                Cette double formation internationale couvre l'ensemble des problématiques du sport business moderne, notamment l'analyse financière des clubs et ligues professionnelles, la négociation et l'activation de contrats de sponsoring, ainsi que l'étude approfondie du droit national et européen régissant la conformité et la gouvernance des grandes institutions sportives.
+                            </p>
+                        </div>
+                        
+                        <!-- FOCUS BUDAPEST -->
+                        <div class="intertitre">Premier Semestre 2023 : Le Tournant International — Élite &amp; Double Projet à Budapest</div>
+                        <p>Ce semestre d'immersion totale en Hongrie constitue un pilier majeur de son adaptabilité internationale, marquant une confrontation directe avec une tout autre culture du sport business.</p>
+                        <div class="photo-box">
+                            <img src="images/images.jpg" alt="Université de Budapest">
+                            <div class="photo-legend">L'Université de Sciences du Sport de Budapest (TF) : un cadre d'excellence pour l'étude du modèle du double projet élite.</div>
+                        </div>
+                        <div class="sub-section-focus">
+                            <p>Victor y a étudié les spécificités du modèle du double projet d'élite, observant des structures universitaires haut de gamme où la majorité des étudiants poursuivent des carrières sportives et académiques simultanées.</p>
+                            <p style="margin-top: 10px;">Le parcours s'est concentré sur la gestion et la modélisation économique d'infrastructures de premier plan, notamment pour l'athlétisme et les sports de glace, le tout enseigné et évalué intégralement en anglais des affaires, consolidant ainsi son profil bilingue fluide.</p>
+                        </div>
+
+                        <!-- LICENCE -->
+                        <div class="intertitre">Saisons 2021 - 2024 : Licence STAPS et Spécialisation Management</div>
+                        <p>Victor a construit ses fondations théoriques au sein de CY-ILEPS au travers de la Licence STAPS, un cursus combinant sciences fondamentales, théories de l'entraînement et practices sportives intensives.</p>
+                        
+                        <div class="sub-section-focus">
+                            <p>Dès sa deuxième année, il s'est orienté vers la spécialité Management du Sport. Cette filière sélective enseigne de manière pragmatique les disciplines de gestion indispensables aux organisations sportives. Le programme comprenait l'étude rigoureuse de la comptabilité de gestion, de la micro et macroéconomie du sport, du marketing événementiel, ainsi que la gestion de projets et le management de réseaux de bénévoles.</p>
+                        </div>
+
+                        <!-- BAC -->
+                        <div class="intertitre">Le Point d'Ancrage : Le Baccalauréat Général</div>
+                        <p>Victor a validé son cycle d'enseignement secondaire au sein de l'établissement d'élite Notre-Dame de la Compassion à Pontoise, une institution privée reconnue pour son niveau d'exigence académique élevé.</p>
+                        
+                        <div class="sub-section-focus">
+                            <p>Son cursus s'est articulé autour des enseignements de spécialité d'économie et d'histoire, fournissant des bases de culture générale solides pour aborder avec succès des études supérieures de management.</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- ONGLET 4 : STATISTIQUES -->
+            <div id="competences" class="tab-content">
+                <article class="main-story">
+                    <div class="tag-category">Feuille de Stats</div>
+                    <h1 class="main-title">PROFIL TACTIQUE ET INDICES DE PERFORMANCE</h1>
+                    <div class="article-body">
+                        
+                        <!-- Note globale du match -->
+                        <div class="rating-box">
+                            <div class="rating-number">9.5/10</div>
+                            <div>
+                                <strong>Note globale de la rédaction : Profil à forte polyvalence</strong><br>
+                                Certifié C1 Cambridge avec un excellent score au TOEIC (925). Sa capacité d'adaptation et sa double culture terrain/bureau en font un profil d'exception.
+                            </div>
+                        </div>
+
+                        <!-- SECTION GRAPH (CAMEMBERT / PIE) -->
+                        <div class="skill-section-title">📊 Répartition Tactique (Profil de Jeu Idéal)</div>
+                        <p style="font-size: 0.95rem; font-family: Georgia, serif; color: #555; margin-bottom: 10px;">
+                            Plutôt que des pourcentages de niveau subjectifs, voici comment se répartit l'orientation professionnelle et opérationnelle de Victor. Un profil équilibré entre la gestion des opérations numériques et l'action sur le terrain.
+                        </p>
+                        
+                        <div class="chart-layout">
+                            <!-- Le Canvas du graphique -->
+                            <div class="chart-container">
+                                <canvas id="skillsPieChart"></canvas>
+                            </div>
+                            <!-- La Légende / Explications -->
+                            <ul class="chart-legend-list">
+                                <li class="chart-legend-item">
+                                    <span class="legend-color-box" style="background-color: #d8232a;"></span>
+                                    <strong>40% Operations, CRM &amp; Rétention</strong><br>
+                                    <span style="font-size: 0.85rem; color: #555;">Maîtrise de Salesforce, gestion d'Upflow et communication via Intercom.</span>
+                                </li>
+                                <li class="chart-legend-item">
+                                    <span class="legend-color-box" style="background-color: #0288d1;"></span>
+                                    <strong>40% Événementiel de Marque &amp; Logistique</strong><br>
+                                    <span style="font-size: 0.85rem; color: #555;">Organisation de compétitions, fittings spécialisés et logistique de flux.</span>
+                                </li>
+                                <li class="chart-legend-item">
+                                    <span class="legend-color-box" style="background-color: #fbc02d;"></span>
+                                    <strong>20% Stratégie, Sponsoring &amp; Médias</strong><br>
+                                    <span style="font-size: 0.85rem; color: #555;">Études de viabilité financière (Krérathon), relations marques et écriture de presse.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- SECTION SOFT SKILLS -->
+                        <div class="skill-section-title">🧠 Statistiques Tactiques (Soft Skills)</div>
+                        <div class="soft-skills-grid">
+                            <div class="soft-skill-card">
+                                <div class="soft-skill-title">Capacité d'adaptation et Polyvalence</div>
+                                <div class="soft-skill-desc">Éprouvée lors de son immersion en Hongrie et sa capacité à basculer d'une mission d'Ops digitale à un événement physique de terrain.</div>
+                            </div>
+                            <div class="soft-skill-card">
+                                <div class="soft-skill-title">Leadership et Gestion de crise</div>
+                                <div class="soft-skill-desc">Développés lors de ses 14 années de scoutisme en encadrant des équipes et en gérant des budgets en conditions réelles.</div>
+                            </div>
+                            <div class="soft-skill-card" style="border-left-color: #d8232a;">
+                                <div class="soft-skill-title">Esprit d'équipe et Sens du collectif</div>
+                                <div class="soft-skill-desc">Renforcé par ses années de volleyball en club et son implication active au sein du bureau directeur de l'association.</div>
+                            </div>
+                            <div class="soft-skill-card" style="border-left-color: #d8232a;">
+                                <div class="soft-skill-title">Résolution de conflits et Négociation</div>
+                                <div class="soft-skill-desc">Validée sur le terrain de la relation client lors d'opérations de sauvegarde de comptes critiques et sensibles.</div>
+                            </div>
+                        </div>
+
+                        <!-- TABLEAU DES TITRES -->
+                        <div class="intertitre" style="margin-top: 30px;">🏆 Palmarès Universitaire &amp; Certifications</div>
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Diplôme / Titre</th>
+                                    <th>Établissement / Organisme</th>
+                                    <th>Distinction / Niveau</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge-medal">Or</span> <strong>Licence STAPS Management</strong></td>
+                                    <td>CY-ILEPS</td>
+                                    <td><strong>Mention Bien</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge-medal">Or</span> <strong>Baccalauréat Général</strong></td>
+                                    <td>Notre-Dame de la Compassion</td>
+                                    <td><strong>Mention Bien</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge-medal">Or</span> <strong>La Fiche Anglais C1</strong></td>
+                                    <td>Cambridge Assessment (925 TOEIC)</td>
+                                    <td>Validé / Certifié</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge-medal silver">Argent</span> <strong>Double Master International</strong></td>
+                                    <td>CY-ILEPS / Coventry University</td>
+                                    <td><strong>Mention Assez Bien</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- SCOUTING REPORT TEXTUEL -->
+                        <div class="intertitre">🔍 Scouting Report (L'Analyse du Recruteur)</div>
+                        <div class="sub-section-focus" style="margin-top: 10px;">
+                            <p><strong>Aptitudes Physiques / Terrain :</strong> Énorme polyvalence opérationnelle. Capable de passer du Pro Shop à la gestion logistique de fitting ou au rôle de Starter en tournoi sans transition.</p>
+                            <p style="margin-top: 5px;"><strong>Aptitudes Mentales / Bureau :</strong> Très fort sens de l'organisation des flux de clients (gestion d'impayés et de support CRM) et esprit d'analyse aiguisé lors de la création de start-up ou d'interviews.</p>
+                        </div>
+
+                    </div>
+                </article>
+            </div>
+
+            <!-- ONGLET 5 : HORS-TERRAIN -->
+            <div id="vie-perso" class="tab-content">
+                <article class="main-story">
+                    <div class="tag-category">Hors-Terrain</div>
+                    <h1 class="main-title">L'ADN SPORTIF ET CITOYEN D'UN MANAGER TOUCHÉ PAR LE VIRUS DU COLLECTIF</h1>
+                    
+                    <div class="article-body">
+                        <!-- 1. SCOUTISME -->
+                        <div class="intertitre">14 ans de Scoutisme : L'École de la Responsabilité</div>
+                        <p>Certains disent que le scoutisme est une véritable école de vie, et Victor Blanche en dit exactement la même chose. Tombé dans ce mouvement citoyen dès son plus jeune âge chez les <strong>louveteaux</strong>, il y apprend très tôt la débrouillardise individuelle, l'autonomie et le respect du collectif au cœur de la nature.</p>
+                        
+                        <p>À l'adolescence, son passage chez les <strong>pionniers</strong> marque une étape décisive de responsabilisation. C'est à cet âge de transition qu'il apprend à réfléchir par lui-même, à concevoir des projets de groupe en autonomie et à agir concrètement face aux imprévus du terrain.</p>
+                        
+                        <p>Cette aventure humaine s'est concrétisée par de nombreux projets de rénovation et des missions à fort impact humanitaire. Très vite, Victor a élargi son action à l'échelle du territoire : profitant de l'expérience de son père, alors directeur logistique du territoire, il a activement collaboré à l'organisation et aux coulisses matérielles de grands rassemblements comme le Frat, le Marathon de Paris ou des sessions de formation au niveau territorial.</p>
+
+                        <p>Devenu chef d'équipe dans le Val-d'Oise, il a transformé cette école du terrain en une solide force collective. Gestion de budgets, coordination d'équipes de jeunes bénévoles et planification logistique de camps en pleine nature : cet engagement de 14 ans est avant tout le socle de ses valeurs d'entraide, de son empathie et de son sens des responsabilités.</p>
+                        
+                        <div class="photo-box">
+                            <img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&q=80&w=1000" alt="Camp Scout et Nature">
+                            <div class="photo-legend">Une véritable école de vie : 14 ans d'engagement chez les Scouts, socle de ses valeurs d'entraide et de son sens des responsabilités.</div>
+                        </div>
+
+                        <!-- 2. SPORT -->
+                        <div class="intertitre">L'Héritage Familial &amp; Parcours Multisport</div>
+                        <p>Chez les Blanche, le sport ne se pratique pas seulement : il se transmet de génération en génération. Immergé dès l'enfance dans une culture de l'effort et du dépassement, Victor grandit entre un père ayant évolué au niveau national en Volleyball et une mère joueuse de tennis passionnée. C'est tout naturellement sur les courts de tennis qu'il tape ses premières balles.</p>
+                        
+                        <!-- AJOUT IMAGE TENNIS (ROLAND GARROS) -->
+                        <div class="photo-box" style="height: 500px;">
+                            <img src="images/image0 (10).jpeg" alt="Victor Blanche - Passion Tennis" style="object-fit: cover; object-position: center 50%;">
+                            <div class="photo-legend">L'héritage de la terre battue : bercé très jeune par la passion familiale pour le tennis, Victor décrypte aujourd'hui chaque échange avec la précision d'un analyste (ici, les tribunes de Roland-Garros).</div>
+                        </div>
+
+                        <p>Désireux d'emboîter le pas à son grand frère, il bifurque ensuite vers les tatamis de Judo. Durant plusieurs années d'une pratique intense et rigoureuse, il décroche sa <strong>ceinture marron</strong> et se frotte au niveau exigeant des compétitions régionales, y forgeant son mental de compétiteur individuel et son respect absolu de l'adversaire.</p>
+
+                        <div class="sub-section-focus">
+                            <strong>La Rigueur de l'Arbitrage : Cap sur les Championnats de France UNSS</strong>
+                            <p style="margin-top: 5px;">
+                                Au collège, Victor explore de nouveaux horizons avec le Tennis de Table, combinant l'AS et le club. Cette double implication le mène aux Championnats de France UNSS, où il décroche sa <strong>certification d'arbitre national UNSS</strong>. Une responsabilité précoce pour faire respecter le règlement et prendre des décisions rapides sous la pression du jeu.
+                            </p>
+                        </div>
+
+                        <p>Le volley-ball s'impose ensuite comme une évidence. Victor commence par l'AS volley de son lycée, partageant cette passion sur le terrain avec son père. Il prolonge cette dynamique collective en rejoignant le club de <strong>Saint-Ouen-l'Aumône</strong> où il évolue encore aujourd'hui au niveau départemental.</p>
+                        
+                        <!-- AJOUT IMAGE VOLLEY D'EQUIPE - Victor est le numéro 33 -->
+                        <div class="photo-box" style="height: 500px;">
+                            <img src="images/image0 (9).jpeg" alt="Équipe de volley-ball de Saint-Ouen-l'Aumône" style="object-fit: cover; object-position: center 40%;">
+                            <div class="photo-legend">Le collectif à l'œuvre : Victor (numéro 33, debout, deuxième en partant de la droite) et ses coéquipiers du club de volley-ball de Saint-Ouen-l'Aumône.</div>
+                        </div>
+
+                        <p>Quand il ne joue pas, Victor décrypte le sport de haut niveau avec la précision d'un analyste. Grand suiveur du <strong>circuit ATP de tennis</strong>, il est également un passionné de basketball, scrutant la <strong>NBA</strong> avec une attention particulière pour la franchise des <i>San Antonio Spurs</i>. Le rugby fait également partie de son patrimoine familial avec le <strong>Stade Français</strong>, complété par la dimension stratégique de la <strong>Formule 1</strong>.</p>
+
+                        <!-- 3. ESPORT & HISTOIRE -->
+                        <div class="intertitre">L'Esport et l'Histoire : De la Stratégie Virtuelle aux Récits du Passé</div>
+                        <p>Quand il s'éloigne des parquets physiques, Victor nourrit son sens tactique et son goût du challenge à travers l'univers du jeu vidéo et de l'esport. Cette passion du jeu virtuel s'accompagne d'une véritable curiosité intellectuelle pour les grands récits qui ont façonné l'Histoire.</p>
+                        
+                        <p>Grand lecteur et amateur de cinéma, il oriente l'intégralité de ses livres et des films qu'il visionne au sein de deux thèmes de prédilection : la grandeur de l'Antiquité grecque et romaine avec sa mythologie fascinante, ainsi que la dimension stratégique et humaine des deux Guerres mondiales. Pour ce profil rigoureux, chaque œuvre est une opportunité d'analyser les mécanismes de prise de décision et d'en tirer des leçons universelles.</p>
+                    </div>
+                </article>
+            </div>
+
+        </main>
+
+        <!-- COLONNE DROITE -->
+        <aside class="sidebar">
+            <div class="widget" style="border-top: 4px solid #d8232a;">
+                <h3 style="text-transform:uppercase; font-size:1rem; margin-bottom:10px; text-align:center;">Mercato Ouvert</h3>
+                <p style="font-family:Arial, sans-serif; font-size:0.85rem; color:#666; text-align:center; margin-bottom:15px;">Recrutez Victor Blanche dès septembre 2026.</p>
+                
+                <a href="mailto:victor.blanche95@gmail.com" class="btn-contact">✉️ Proposer un poste</a>
+                
+                <div style="margin-top:15px; border-top:1px solid #eee; padding-top:15px;">
+                    <div class="sidebar-row">
+                        <span>Téléphone</span>
+                        <span class="interactive-contact" onclick="copyContact('06 34 03 31 85', 'Numéro de téléphone copié !')">06 34 03 31 85</span>
+                    </div>
+                    <div class="sidebar-row">
+                        <span>E-mail</span>
+                        <span class="interactive-contact" onclick="copyContact('victor.blanche95@gmail.com', 'Adresse e-mail copiée !')">victor.blanche95@gmail.com</span>
+                    </div>
+                    <div class="sidebar-row">
+                        <span>LinkedIn</span>
+                        <a href="https://www.linkedin.com/in/victor-blanche-26904b251" target="_blank" class="sidebar-link">Mon Profil</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- L'AVIS DE LA RÉDACTION ENRICHI -->
+            <div class="widget" style="background-color: #fffde7; border: 1px solid #fbc02d;">
+                <div class="widget-title" style="background-color: #fbc02d; color: #111;">L'Avis de la Rédaction</div>
+                <p class="edito-text">
+                    "Victor Blanche affiche le profil type du couteau suisse du sport business. Porté par la double culture franco-britannique de son Master, forgé par 14 ans d'école de terrain chez les Scouts et nourri par une pratique multi-sports intensive (judo régional, volley de club et sports de raquette), il apporte une maturité managériale rare pour un jeune diplômé. Sa polyvalence technique et sa capacité d'adaptation en font une signature prioritaire."
+                </p>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Notification Toast Element -->
+    <div id="toast-notification">
+        <span id="toast-icon">📋</span>
+        <span id="toast-text">Texte copié !</span>
+    </div>
+
+    <!-- SCRIPT DU CHANGEMENT D'ONGLETS ET DU GRAPH INTERACTIF -->
+    <script>
+        var chartInitialized = false; // Permet de savoir si le graphique a déjà été créé
+
+        // Fonction pour changer d'onglets avec effet de fondu moderne
+        function openTab(tabId) {
+            var contents = document.getElementsByClassName('tab-content');
+            var buttons = document.getElementsByClassName('nav-btn');
+            
+            // Retirer l'état actif des boutons
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+            
+            // Masquer les autres contenus avec effet fluide
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove('show');
+                contents[i].style.display = 'none';
+            }
+            
+            // Activer le bouton cliqué et afficher l'onglet associé
+            var activeContent = document.getElementById(tabId);
+            activeContent.style.display = 'block';
+            
+            // Déclencher un reflow du DOM pour s'assurer que la transition CSS soit exécutée correctement
+            void activeContent.offsetWidth; 
+            
+            activeContent.classList.add('show');
+            event.currentTarget.classList.add('active');
+
+            // Scroll fluide vers le haut de la zone d'article sur mobile
+            if (window.innerWidth < 850) {
+                activeContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // Initialiser le graphique dès que l'onglet statistique est ouvert pour la première fois
+            if (tabId === 'competences' && !chartInitialized) {
+                setTimeout(initChart, 100); // Léger décalage pour laisser le DOM s'animer
+                chartInitialized = true;
+            }
+        }
+
+        // Fonction de copie intelligente dans le presse-papiers (compatible iframe)
+        function copyContact(text, successMessage) {
+            var tempInput = document.createElement("input");
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999); // Pour appareils mobiles
+            
+            try {
+                var successful = document.execCommand("copy");
+                if (successful) {
+                    showToast(successMessage);
+                } else {
+                    console.error("Échec de la copie standard.");
+                }
+            } catch (err) {
+                console.error("Erreur lors de la copie :", err);
+            }
+            
+            document.body.removeChild(tempInput);
+        }
+
+        // Affiche la notification toast élégante
+        function showToast(message) {
+            var toast = document.getElementById("toast-notification");
+            var text = document.getElementById("toast-text");
+            text.textContent = message;
+            toast.classList.add("show");
+            
+            setTimeout(function() {
+                toast.classList.remove("show");
+            }, 2500);
+        }
+
+        // Fonction dédiée à l'initialisation du graphique Chart.js
+        function initChart() {
+            var ctx = document.getElementById('skillsPieChart').getContext('2d');
+            var skillsPieChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        'Operations, CRM & Rétention', 
+                        'Événementiel de Marque & Logistique', 
+                        'Stratégie, Sponsoring & Médias'
+                    ],
+                    datasets: [{
+                        data: [40, 40, 20],
+                        backgroundColor: [
+                            '#d8232a', // Rouge L'Équipe
+                            '#0288d1', // Bleu profond
+                            '#fbc02d'  // Jaune d'Or
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false // Utilisation de notre légende HTML sur mesure à droite
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.label + ' : ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%' // Donne l'aspect d'anneau moderne
+                }
+            });
+        }
+    </script>
+</body>
+</html>
