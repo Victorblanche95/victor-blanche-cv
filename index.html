@@ -484,6 +484,23 @@
             color: #444;
         }
 
+        /* Mini-jeu Labyrinthe */
+        .maze-btn {
+            background-color: #111;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.15s;
+        }
+        .maze-btn:hover, .maze-btn:active {
+            background-color: #d8232a;
+        }
+        #maze-reset:hover {
+            background-color: #ddd;
+        }
+
         /* Toast notification */
         #toast-notification {
             position: fixed;
@@ -922,6 +939,31 @@
                     "Victor Blanche présente un profil polyvalent, à cheval entre gestion opérationnelle et communication. Formé à la double culture franco-britannique de son Master, il s'appuie aussi sur 14 années de scoutisme et une pratique multi-sports régulière (judo, volley, tennis). Cette combinaison d'expériences terrain et académiques constitue un profil équilibré pour un premier poste en management du sport."
                 </p>
             </div>
+
+            <!-- MINI-JEU : LE LABYRINTHE DU RECRUTEMENT -->
+            <div class="widget" id="maze-widget">
+                <div class="widget-title" style="background-color: #2e7d32;">🎮 Aidez Victor à décrocher le poste</div>
+                <p style="font-size: 0.78rem; color: #666; margin-bottom: 10px; font-family: Arial, sans-serif;">Guidez-le jusqu'à l'offre d'emploi avec les flèches du clavier ou les boutons ci-dessous.</p>
+                <div style="display: flex; justify-content: center;">
+                    <canvas id="maze-canvas" width="255" height="255" style="background:#fff; border:2px solid #111; max-width:100%; touch-action:none; cursor:pointer;"></canvas>
+                </div>
+                <div id="maze-controls" style="display:grid; grid-template-columns: repeat(3, 38px); grid-template-rows: repeat(3, 38px); gap:4px; justify-content:center; margin-top:10px;">
+                    <div></div>
+                    <button class="maze-btn" data-dir="up" style="font-family: Arial, sans-serif;">▲</button>
+                    <div></div>
+                    <button class="maze-btn" data-dir="left" style="font-family: Arial, sans-serif;">◀</button>
+                    <div></div>
+                    <button class="maze-btn" data-dir="right" style="font-family: Arial, sans-serif;">▶</button>
+                    <div></div>
+                    <button class="maze-btn" data-dir="down" style="font-family: Arial, sans-serif;">▼</button>
+                    <div></div>
+                </div>
+                <div id="maze-win-msg" style="display:none; text-align:center; margin-top:12px; font-family: Arial, sans-serif; font-size: 0.85rem; color: #2e7d32; font-weight: bold;">
+                    🎉 Victor a trouvé le poste !<br>Et si c'était vous qui le lui proposiez ?<br>
+                    <a href="mailto:victor.blanche95@gmail.com" style="color:#d8232a; display:inline-block; margin-top:6px;">Contactez-le →</a>
+                </div>
+                <button id="maze-reset" style="margin-top:10px; width:100%; padding:7px; background:#eee; border:1px solid #ccc; border-radius:4px; cursor:pointer; font-size:0.8rem; font-family: Arial, sans-serif;">🔄 Recommencer</button>
+            </div>
         </aside>
 
     </div>
@@ -1049,6 +1091,112 @@
                 }
             });
         }
+
+        // ============ MINI-JEU : LE LABYRINTHE DU RECRUTEMENT ============
+        (function() {
+            var mazeGrid = [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+                [1,1,1,0,1,1,1,1,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,0,0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0,1,1,1,0,1,1,1],
+                [1,0,1,0,0,0,1,0,0,0,1,0,0,0,1],
+                [1,0,1,1,1,1,1,1,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,0,0,1,0,1,0,1,0,1],
+                [1,0,1,1,1,0,1,0,1,0,1,1,1,0,1],
+                [1,0,0,0,0,0,1,0,1,0,0,0,0,0,1],
+                [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1],
+                [1,0,0,0,0,0,1,0,1,0,0,0,1,0,1],
+                [1,1,1,1,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,0,0,1,0,0,0,1,0,0,0,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ];
+            var rows = mazeGrid.length, cols = mazeGrid[0].length;
+            var canvas = document.getElementById('maze-canvas');
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d');
+            var cell = canvas.width / cols;
+            var start = {r: 1, c: 1};
+            var goal = {r: rows - 2, c: cols - 2};
+            var player = {r: start.r, c: start.c};
+            var won = false;
+            var mazeActive = false;
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (var r = 0; r < rows; r++) {
+                    for (var c = 0; c < cols; c++) {
+                        ctx.fillStyle = mazeGrid[r][c] === 1 ? '#111' : '#f4f4f4';
+                        ctx.fillRect(c * cell, r * cell, cell, cell);
+                    }
+                }
+                // Objectif (offre d'emploi)
+                ctx.font = (cell * 0.85) + 'px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('💼', goal.c * cell + cell / 2, goal.r * cell + cell / 2);
+                // Joueur (Victor)
+                ctx.beginPath();
+                ctx.arc(player.c * cell + cell / 2, player.r * cell + cell / 2, cell * 0.32, 0, 2 * Math.PI);
+                ctx.fillStyle = '#d8232a';
+                ctx.fill();
+                ctx.font = 'bold ' + (cell * 0.4) + 'px Arial';
+                ctx.fillStyle = '#fff';
+                ctx.fillText('V', player.c * cell + cell / 2, player.r * cell + cell / 2 + 1);
+            }
+
+            function tryMove(dr, dc) {
+                if (won) return;
+                var nr = player.r + dr, nc = player.c + dc;
+                if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) return;
+                if (mazeGrid[nr][nc] === 1) return;
+                player.r = nr;
+                player.c = nc;
+                draw();
+                if (player.r === goal.r && player.c === goal.c) {
+                    won = true;
+                    var msg = document.getElementById('maze-win-msg');
+                    if (msg) msg.style.display = 'block';
+                }
+            }
+
+            function resetMaze() {
+                player.r = start.r;
+                player.c = start.c;
+                won = false;
+                var msg = document.getElementById('maze-win-msg');
+                if (msg) msg.style.display = 'none';
+                draw();
+            }
+
+            document.querySelectorAll('.maze-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    mazeActive = true;
+                    var dir = btn.getAttribute('data-dir');
+                    if (dir === 'up') tryMove(-1, 0);
+                    else if (dir === 'down') tryMove(1, 0);
+                    else if (dir === 'left') tryMove(0, -1);
+                    else if (dir === 'right') tryMove(0, 1);
+                });
+            });
+
+            canvas.addEventListener('click', function() { mazeActive = true; });
+
+            document.addEventListener('keydown', function(e) {
+                if (!mazeActive) return;
+                if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].indexOf(e.key) === -1) return;
+                e.preventDefault();
+                if (e.key === 'ArrowUp') tryMove(-1, 0);
+                else if (e.key === 'ArrowDown') tryMove(1, 0);
+                else if (e.key === 'ArrowLeft') tryMove(0, -1);
+                else if (e.key === 'ArrowRight') tryMove(0, 1);
+            });
+
+            var resetBtn = document.getElementById('maze-reset');
+            if (resetBtn) resetBtn.addEventListener('click', resetMaze);
+
+            draw();
+        })();
     </script>
 </body>
 </html>
