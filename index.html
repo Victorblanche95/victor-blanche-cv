@@ -955,9 +955,13 @@
             <!-- MINI-JEU : LE LABYRINTHE DU RECRUTEMENT -->
             <div class="widget" id="maze-widget">
                 <div class="widget-title" style="background-color: #2e7d32;">🎮 Aidez Victor à décrocher le poste</div>
-                <p style="font-size: 0.78rem; color: #666; margin-bottom: 10px; font-family: Arial, sans-serif;">Guidez-le jusqu'à l'offre d'emploi avec les flèches du clavier ou les boutons ci-dessous.</p>
+                <p style="font-size: 0.78rem; color: #666; margin-bottom: 10px; font-family: Arial, sans-serif;">Guidez-le jusqu'à l'offre d'emploi avec les flèches du clavier ou les boutons ci-dessous. Chrono lancé au premier mouvement !</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; font-family:Arial, sans-serif; font-size:0.8rem; margin-bottom:6px;">
+                    <span>⏱️ <strong id="maze-timer">00:00</strong></span>
+                    <span id="maze-best" style="color:#666;"></span>
+                </div>
                 <div style="display: flex; justify-content: center;">
-                    <canvas id="maze-canvas" width="255" height="255" style="background:#fff; border:2px solid #111; max-width:100%; touch-action:none; cursor:pointer;"></canvas>
+                    <canvas id="maze-canvas" width="300" height="300" style="background:#fff; border:2px solid #111; max-width:100%; touch-action:none; cursor:pointer;"></canvas>
                 </div>
                 <div id="maze-controls" style="display:grid; grid-template-columns: repeat(3, 38px); grid-template-rows: repeat(3, 38px); gap:4px; justify-content:center; margin-top:10px;">
                     <div></div>
@@ -971,7 +975,7 @@
                     <div></div>
                 </div>
                 <div id="maze-win-msg" style="display:none; text-align:center; margin-top:12px; font-family: Arial, sans-serif; font-size: 0.85rem; color: #2e7d32; font-weight: bold;">
-                    🎉 Victor a trouvé le poste !<br>Et si c'était vous qui le lui proposiez ?<br>
+                    🎉 Victor a trouvé le poste !<br><span id="maze-win-time"></span><br>Et si c'était vous qui le lui proposiez ?<br>
                     <a href="mailto:victor.blanche95@gmail.com" style="color:#d8232a; display:inline-block; margin-top:6px;">Contactez-le →</a>
                 </div>
                 <button id="maze-reset" style="margin-top:10px; width:100%; padding:7px; background:#eee; border:1px solid #ccc; border-radius:4px; cursor:pointer; font-size:0.8rem; font-family: Arial, sans-serif;">🔄 Recommencer</button>
@@ -1107,21 +1111,29 @@
         // ============ MINI-JEU : LE LABYRINTHE DU RECRUTEMENT ============
         (function() {
             var mazeGrid = [
-                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                [1,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
-                [1,1,1,0,1,1,1,1,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,0,0,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0,1,1,1,0,1,1,1],
-                [1,0,1,0,0,0,1,0,0,0,1,0,0,0,1],
-                [1,0,1,1,1,1,1,1,1,0,1,0,1,0,1],
-                [1,0,0,0,1,0,0,0,1,0,1,0,1,0,1],
-                [1,0,1,1,1,0,1,0,1,0,1,1,1,0,1],
-                [1,0,0,0,0,0,1,0,1,0,0,0,0,0,1],
-                [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1],
-                [1,0,0,0,0,0,1,0,1,0,0,0,1,0,1],
-                [1,1,1,1,1,0,1,0,1,0,1,0,1,0,1],
-                [1,0,0,0,0,0,1,0,0,0,1,0,0,0,1],
-                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+                [1,1,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,1,1,1,1,0,1],
+                [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1],
+                [1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1],
+                [1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1],
+                [1,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,1],
+                [1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,1,1,0,1],
+                [1,0,1,0,1,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,0,0,1],
+                [1,0,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,1,1,1,1,1],
+                [1,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,1],
+                [1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,1,1,0,1],
+                [1,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,1,0,1],
+                [1,0,1,1,1,1,1,0,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1],
+                [1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0,1,0,1],
+                [1,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+                [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0,1,0,1],
+                [1,1,1,0,1,0,1,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1],
+                [1,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,1],
+                [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,0,1],
+                [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
             ];
             var rows = mazeGrid.length, cols = mazeGrid[0].length;
             var canvas = document.getElementById('maze-canvas');
@@ -1133,6 +1145,40 @@
             var player = {r: start.r, c: start.c};
             var won = false;
             var mazeActive = false;
+            var timerInterval = null;
+            var startTime = null;
+            var bestKey = 'letransfert_maze_best_time';
+
+            function formatTime(ms) {
+                var totalSec = Math.floor(ms / 1000);
+                var m = Math.floor(totalSec / 60);
+                var s = totalSec % 60;
+                return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+            }
+
+            function updateBestDisplay() {
+                var bestEl = document.getElementById('maze-best');
+                if (!bestEl) return;
+                var best = localStorage.getItem(bestKey);
+                bestEl.textContent = best ? ('🏆 ' + formatTime(parseInt(best, 10))) : '';
+            }
+
+            function startTimer() {
+                if (timerInterval) return;
+                startTime = Date.now();
+                var timerEl = document.getElementById('maze-timer');
+                timerInterval = setInterval(function() {
+                    if (timerEl) timerEl.textContent = formatTime(Date.now() - startTime);
+                }, 250);
+            }
+
+            function stopTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                return startTime ? (Date.now() - startTime) : 0;
+            }
 
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1149,10 +1195,10 @@
                 ctx.fillText('💼', goal.c * cell + cell / 2, goal.r * cell + cell / 2);
                 // Joueur (Victor)
                 ctx.beginPath();
-                ctx.arc(player.c * cell + cell / 2, player.r * cell + cell / 2, cell * 0.32, 0, 2 * Math.PI);
+                ctx.arc(player.c * cell + cell / 2, player.r * cell + cell / 2, cell * 0.38, 0, 2 * Math.PI);
                 ctx.fillStyle = '#d8232a';
                 ctx.fill();
-                ctx.font = 'bold ' + (cell * 0.4) + 'px Arial';
+                ctx.font = 'bold ' + (cell * 0.45) + 'px Arial';
                 ctx.fillStyle = '#fff';
                 ctx.fillText('V', player.c * cell + cell / 2, player.r * cell + cell / 2 + 1);
             }
@@ -1162,11 +1208,21 @@
                 var nr = player.r + dr, nc = player.c + dc;
                 if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) return;
                 if (mazeGrid[nr][nc] === 1) return;
+                if (!timerInterval && (player.r !== start.r || player.c !== start.c || nr !== start.r || nc !== start.c)) {
+                    startTimer();
+                }
                 player.r = nr;
                 player.c = nc;
                 draw();
                 if (player.r === goal.r && player.c === goal.c) {
                     won = true;
+                    var elapsed = stopTimer();
+                    var best = localStorage.getItem(bestKey);
+                    var isNewBest = !best || elapsed < parseInt(best, 10);
+                    if (isNewBest) localStorage.setItem(bestKey, String(elapsed));
+                    var timeEl = document.getElementById('maze-win-time');
+                    if (timeEl) timeEl.textContent = 'Temps : ' + formatTime(elapsed) + (isNewBest ? ' — nouveau record ! 🏆' : '');
+                    updateBestDisplay();
                     var msg = document.getElementById('maze-win-msg');
                     if (msg) msg.style.display = 'block';
                 }
@@ -1176,8 +1232,12 @@
                 player.r = start.r;
                 player.c = start.c;
                 won = false;
+                stopTimer();
+                var timerEl = document.getElementById('maze-timer');
+                if (timerEl) timerEl.textContent = '00:00';
                 var msg = document.getElementById('maze-win-msg');
                 if (msg) msg.style.display = 'none';
+                updateBestDisplay();
                 draw();
             }
 
@@ -1207,6 +1267,7 @@
             var resetBtn = document.getElementById('maze-reset');
             if (resetBtn) resetBtn.addEventListener('click', resetMaze);
 
+            updateBestDisplay();
             draw();
         })();
     </script>
